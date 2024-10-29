@@ -30,9 +30,33 @@ Once installed and configured, press the assigned hotkey in OBS to:
 2. Stop the replay buffer.
 3. Restart the replay buffer.
 
+### Key Parts of the Code
+
+Here’s a summary of the main parts of the code for users who may want to modify it:
+
+- **Hotkey Initialization and Control (`sequence_hotkey_id`)**:  
+  This variable is the identifier for the hotkey used to trigger the replay sequence. The function `execute_replay_sequence()` manages hotkey presses, ensuring that only one sequence runs at a time by checking the `current_phase`.
+
+- **Replay Sequence Phases (`current_phase`)**:  
+  This variable tracks the stage of the replay sequence: idle, save, stop, and start. It begins at idle and updates to the next phase after completing each step, returning to idle after restarting the replay buffer.
+
+- **Save Replay (`save_replay`)**:  
+  This function initiates replay saving using `obs.obs_frontend_replay_buffer_save()`. It includes `check_if_saved()`, which checks if saving is complete and advances to the stop phase if so.
+
+- **Stop Replay (`stop_replay`)**:  
+  This function halts the replay buffer through `obs.obs_frontend_replay_buffer_stop()`. It uses `check_if_stopped()` to ensure stopping has finished before moving on to start the replay again.
+
+- **Start Replay (`start_replay`)**:  
+  This function restarts the replay buffer with `obs.obs_frontend_replay_buffer_start()`, completing the sequence by setting `current_phase` back to idle.
+
+- **Automatic Start on Launch (`script_load`)**:  
+  This function automatically launches the replay buffer when OBS starts if it's not already active. It also registers the hotkey for the sequence.
+
+- **Settings Save and Load (`script_save`, `script_load`)**:  
+  These functions handle saving and loading the hotkey settings, ensuring that the user’s preferred hotkey is preserved across sessions.
+
 ### Acknowledgments
 This script was developed with the assistance of ChatGPT, an AI language model by OpenAI.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
